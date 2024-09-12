@@ -3,13 +3,14 @@ const choices = Array.from(document.getElementsByClassName("choice-text"));
 const progressText = document.getElementById("progressText");
 const  scoreText = document.getElementById('score');
 const progressBarFull = document.getElementById('progressBarFull'); 
+const  timer = document.getElementById('time')
 
 let currentQuestion = {};
 let acceptingAnswers = false;
 let score = 0;
 let questionCounter = 0;
 let avialiableQuestions = [];
-
+let timeLeft = 60;
 let questions = [
     {
         question: "Inside which HTML element do we put the Javascript File ??",
@@ -61,8 +62,28 @@ startGame = () => {
     questionCounter = 0;
     score = 0;
     avialiableQuestions =[...questions];
+    timeLeft = 0; 
+    startTime = Date.now(); 
+    timer.innerText = `${timeLeft}s`;
     getNewQuestion();
+    startTimer();
 };
+
+
+startTimer = () => {
+    setInterval(() => {
+    const currentTime = Date.now();        
+    const timeElapsed = (currentTime - startTime) / 1000; 
+    timeLeft = 60 - timeElapsed; 
+        if (timeLeft <= 0) {
+            localStorage.setItem("mostRecentScore", score);
+            localStorage.setItem("timeLeft", timeLeft); 
+            window.location.assign("/end.html");
+        }
+        timer.innerText = ` ${timeElapsed.toFixed(0)}s`;
+    }, 1000); 
+};
+
 
 getNewQuestion= () => {
     if(avialiableQuestions.length === 0 || questionCounter >= MAX_QUESTIONS ){
@@ -116,6 +137,6 @@ choices.forEach(choice => {
 incrementScore = num => {
     score +=num ;
     scoreText.innerText = score;
-}
+};
 
 startGame();
